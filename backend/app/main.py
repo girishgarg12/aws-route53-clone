@@ -8,6 +8,7 @@ from app.services.auth import hash_password
 
 from app.routers import auth, hosted_zones, dns_records
 
+from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
 
@@ -42,6 +43,16 @@ seed_demo_user()
 
 app = FastAPI(
     title="Route53 Clone",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth.router)
