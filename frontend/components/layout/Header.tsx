@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header className="flex h-14 items-center border-b border-[#30363d] bg-[#161e2d] px-4 text-white">
       <div className="flex w-60 items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#ff9900] text-sm font-bold text-[#161e2d]">
+        <div className="flex h-8 w-8  items-center justify-center rounded-sm bg-[#ff9900] text-sm font-bold text-[#161e2d]">
           AWS
         </div>
 

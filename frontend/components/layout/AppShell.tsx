@@ -27,7 +27,7 @@ export default function AppShell({
           }
         />
 
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 px-6 py-7 lg:px-8 lg:py-8">
           {children}
         </main>
       </div>
