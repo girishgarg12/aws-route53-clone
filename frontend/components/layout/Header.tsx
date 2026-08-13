@@ -69,14 +69,14 @@ export default function Header() {
       {/* Right actions */}
       <div className="flex shrink-0 items-center gap-5">
         <button
-          className="rounded-sm p-1.5 text-[#d5dbdb] transition-colors hover:bg-[#253143] hover:text-white"
+          className="rounded-sm p-1.5 text-[#d5dbdb] transition-colors hover:bg-[#253143] hover:text-white cursor-pointer"
           aria-label="Help"
         >
           <CircleHelp size={19} />
         </button>
 
         <button
-          className="rounded-sm p-1.5 text-[#d5dbdb] transition-colors hover:bg-[#253143] hover:text-white"
+          className="rounded-sm p-1.5 text-[#d5dbdb] transition-colors hover:bg-[#253143] hover:text-white cursor-pointer"
           aria-label="Notifications"
         >
           <Bell size={19} />
@@ -90,7 +90,7 @@ export default function Header() {
                 (value) => !value
               )
             }
-            className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors hover:bg-[#253143]"
+            className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors hover:bg-[#253143] cursor-pointer"
             aria-expanded={accountOpen}
             aria-haspopup="menu"
           >
@@ -111,7 +111,7 @@ export default function Header() {
 
           {accountOpen && (
             <div
-              className="absolute right-0 top-full z-50 mt-2 w-56 border border-[#d5dbdb] bg-white py-2 text-[#161e2d] shadow-lg"
+              className="absolute right-0 top-full z-50 mt-2 w-56 border border-[#d5dbdb] bg-white py-2 text-[#161e2d] shadow-lg cursor-pointer"
               role="menu"
             >
               <div className="border-b border-[#eaeded] px-4 py-3">
@@ -127,7 +127,7 @@ export default function Header() {
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-[#f2f3f3] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-[#f2f3f3] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                 role="menuitem"
               >
                 <LogOut size={16} />

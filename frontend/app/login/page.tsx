@@ -53,7 +53,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[420px]">
         {/* AWS Logo */}
         <div className="mb-5 flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-[#ff9900] text-lg font-bold text-[#161e2d]">
+          <div className="flex h-12 w-14 mt-2 items-center justify-center rounded-sm bg-[#ff9900] text-lg font-bold text-[#161e2d]">
             AWS
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-sm bg-[#ff9900] px-4 py-2.5 text-sm font-semibold text-[#161e2d] hover:bg-[#ec8b00] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-sm bg-[#ff9900] px-4 py-2.5 text-sm font-semibold text-[#161e2d] hover:bg-[#ec8b00] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
               <LockKeyhole size={16} />
 
@@ -153,7 +153,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={useDemoCredentials}
-              className="mt-3 w-full border border-[#879596] px-4 py-2 text-sm font-semibold text-[#161e2d] hover:bg-[#f2f3f3]"
+              className="mt-3 w-full border border-[#879596] px-4 py-2 text-sm font-semibold text-[#161e2d] hover:bg-[#f2f3f3] cursor-pointer"
             >
               Use demo credentials
             </button>

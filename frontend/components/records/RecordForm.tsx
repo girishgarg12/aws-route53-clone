@@ -251,7 +251,7 @@ export default function RecordForm({
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="border border-[#879596] px-4 py-2 text-sm font-semibold hover:bg-[#f2f3f3] disabled:opacity-50"
+          className="border border-[#879596] px-4 py-2 text-sm font-semibold hover:bg-[#f2f3f3] disabled:opacity-50 cursor-pointer"
         >
           Cancel
         </button>
@@ -259,7 +259,7 @@ export default function RecordForm({
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#ff9900] px-4 py-2 text-sm font-semibold text-[#161e2d] hover:bg-[#ec8b00] disabled:cursor-not-allowed disabled:opacity-60"
+          className="bg-[#ff9900] px-4 py-2 text-sm font-semibold text-[#161e2d] hover:bg-[#ec8b00] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
         >
           {loading
             ? "Saving..."

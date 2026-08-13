@@ -359,7 +359,7 @@ export default function HostedZonesPage() {
             onClick={() =>
               setShowCreate(true)
             }
-            className="flex items-center gap-2 rounded-sm bg-[#ff9900] px-4 py-2 text-sm font-semibold text-[#161e2d] transition-colors hover:bg-[#ec8b00]"
+            className="flex items-center gap-2 rounded-sm bg-[#ff9900] px-4 py-2 text-sm font-semibold text-[#161e2d] transition-colors hover:bg-[#ec8b00] cursor-pointer"
           >
             <Plus size={16} />
 
@@ -402,7 +402,7 @@ export default function HostedZonesPage() {
                 loadZones()
               }
               disabled={loading}
-              className="rounded-sm border border-[#879596] p-2 transition-colors hover:bg-[#f2f3f3] disabled:opacity-50"
+              className="rounded-sm border border-[#879596] p-2 transition-colors hover:bg-[#f2f3f3] disabled:opacity-50 cursor-pointer"
               aria-label="Refresh"
             >
               <RefreshCw
@@ -446,7 +446,7 @@ export default function HostedZonesPage() {
                 onClick={() =>
                   loadZones()
                 }
-                className="font-semibold underline transition-opacity hover:opacity-70"
+                className="font-semibold underline transition-opacity hover:opacity-70 cursor-pointer"
               >
                 Try again
               </button>
@@ -520,7 +520,7 @@ export default function HostedZonesPage() {
                               true
                             )
                           }
-                          className="mt-4 text-sm font-semibold text-[#0073bb] transition-colors hover:text-[#005a8c] hover:underline"
+                          className="mt-4 text-sm font-semibold text-[#0073bb] transition-colors hover:text-[#005a8c] hover:underline cursor-pointer"
                         >
                           Create hosted zone
                         </button>
@@ -577,7 +577,7 @@ export default function HostedZonesPage() {
                               zone.id
                             )
                           }
-                          className={`rounded-sm p-1.5 transition-colors hover:bg-[#eaeded] ${
+                          className={`rounded-sm p-1.5 transition-colors hover:bg-[#eaeded] cursor-pointer ${
                             openMenuId ===
                             zone.id
                               ? "bg-[#eaeded]"
@@ -661,7 +661,7 @@ export default function HostedZonesPage() {
         menuPosition !== null && (
           <div
             ref={menuRef}
-            className="fixed z-[100] w-40 border border-[#d5dbdb] bg-white py-1 shadow-lg"
+            className="fixed z-[100] w-40 border border-[#d5dbdb] bg-white py-1 shadow-lg cursor-pointer"
             style={{
                 top: menuPosition.top,
                 left: menuPosition.left,
@@ -669,14 +669,14 @@ export default function HostedZonesPage() {
             >
             <button
               onClick={handleEditFromMenu}
-              className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#f2f3f3]"
+              className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#f2f3f3] cursor-pointer"
             >
               Edit
             </button>
 
             <button
               onClick={handleDeleteFromMenu}
-              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#d13212] transition-colors hover:bg-[#fff4f2]"
+              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#d13212] transition-colors hover:bg-[#fff4f2] cursor-pointer"
             >
               <Trash2 size={14} />
 
