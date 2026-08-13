@@ -6,7 +6,8 @@ from app.models import User, Session, HostedZone, DNSRecord
 from app.routers import auth
 from app.services.auth import hash_password
 
-from app.routers import auth, hosted_zones
+from app.routers import auth, hosted_zones, dns_records
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -45,8 +46,9 @@ app = FastAPI(
 
 app.include_router(auth.router)
 
-app.include_router(auth.router)
 app.include_router(hosted_zones.router)
+
+app.include_router(dns_records.router)
 
 @app.get("/health")
 def health_check():
