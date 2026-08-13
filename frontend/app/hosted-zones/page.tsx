@@ -12,20 +12,20 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
-} from "react";
+} from "react"; 
 
 import AppShell from "@/components/layout/AppShell";
 import Modal from "@/components/ui/Modal";
 import Toast from "@/components/ui/Toast";
-
 import HostedZoneForm from "@/components/hosted-zones/HostedZoneForm";
 
 import {
   createHostedZone,
   deleteHostedZone,
-  getHostedZones,
   getHostedZone,
+  getHostedZones,
   updateHostedZone,
 } from "@/lib/hosted-zones";
 
@@ -67,6 +67,24 @@ export default function HostedZonesPage() {
   const [toast, setToast] =
     useState<string | null>(null);
 
+  /*
+   * Action menu state.
+   *
+   * We render the menu outside the table using
+   * position: fixed so it cannot be clipped by
+   * the table's overflow container.
+   */
+  const [openMenuId, setOpenMenuId] =
+    useState<number | null>(null);
+
+  const [menuPosition, setMenuPosition] =
+    useState<{
+      top: number;
+      left: number;
+    } | null>(null);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const loadZones = useCallback(
     async (
       currentSearch = search,
@@ -101,6 +119,35 @@ export default function HostedZonesPage() {
   useEffect(() => {
     loadZones();
   }, [loadZones]);
+
+  useEffect(() => {
+  if (openMenuId === null) return;
+
+  function handleOutsideClick(
+    event: MouseEvent
+  ) {
+    const target = event.target as Node;
+
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(target)
+    ) {
+      closeActionMenu();
+    }
+  }
+
+  document.addEventListener(
+    "mousedown",
+    handleOutsideClick
+  );
+
+  return () => {
+    document.removeEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
+  };
+}, [openMenuId]);
 
   async function handleCreate(data: {
     name: string;
@@ -211,13 +258,85 @@ export default function HostedZonesPage() {
     setPage(1);
   }
 
+  function toggleActionMenu(
+    event: React.MouseEvent<HTMLButtonElement>,
+    zoneId: number
+  ) {
+    if (openMenuId === zoneId) {
+      setOpenMenuId(null);
+      setMenuPosition(null);
+      return;
+    }
+
+    const rect =
+      event.currentTarget.getBoundingClientRect();
+
+    const menuWidth = 160;
+    const menuHeight = 84;
+    const spacing = 6;
+
+    const left = Math.min(
+      rect.right - menuWidth,
+      window.innerWidth - menuWidth - 12
+    );
+
+    const hasSpaceBelow =
+      window.innerHeight -
+        rect.bottom >
+      menuHeight + spacing;
+
+    const top = hasSpaceBelow
+      ? rect.bottom + spacing
+      : rect.top - menuHeight - spacing;
+
+    setOpenMenuId(zoneId);
+
+    setMenuPosition({
+      top,
+      left: Math.max(12, left),
+    });
+  }
+
+  function closeActionMenu() {
+    setOpenMenuId(null);
+    setMenuPosition(null);
+  }
+
+  function handleEditFromMenu() {
+    if (openMenuId === null) return;
+
+    const zone = zones.find(
+      (item) => item.id === openMenuId
+    );
+
+    if (!zone) return;
+
+    closeActionMenu();
+    openEdit(zone);
+  }
+
+  function handleDeleteFromMenu() {
+    if (openMenuId === null) return;
+
+    const zone = zones.find(
+      (item) => item.id === openMenuId
+    );
+
+    if (!zone) return;
+
+    closeActionMenu();
+    setDeletingZone(zone);
+  }
+
   return (
     <AppShell>
-      <div className="p-6">
+      <div>
         {/* Breadcrumb */}
         <div className="mb-5 flex items-center gap-2 text-sm text-[#5f6b75]">
           <span>Route 53</span>
+
           <ChevronRight size={14} />
+
           <span className="text-[#161e2d]">
             Hosted zones
           </span>
@@ -240,9 +359,10 @@ export default function HostedZonesPage() {
             onClick={() =>
               setShowCreate(true)
             }
-            className="flex items-center gap-2 rounded-sm bg-[#ff9900] px-4 py-2 text-sm font-semibold text-[#161e2d] hover:bg-[#ec8b00]"
+            className="flex items-center gap-2 rounded-sm bg-[#ff9900] px-4 py-2 text-sm font-semibold text-[#161e2d] transition-colors hover:bg-[#ec8b00]"
           >
             <Plus size={16} />
+
             Create hosted zone
           </button>
         </div>
@@ -282,7 +402,7 @@ export default function HostedZonesPage() {
                 loadZones()
               }
               disabled={loading}
-              className="rounded-sm border border-[#879596] p-2 hover:bg-[#f2f3f3] disabled:opacity-50"
+              className="rounded-sm border border-[#879596] p-2 transition-colors hover:bg-[#f2f3f3] disabled:opacity-50"
               aria-label="Refresh"
             >
               <RefreshCw
@@ -317,6 +437,7 @@ export default function HostedZonesPage() {
             </div>
           </div>
 
+          {/* Error */}
           {error && (
             <div className="m-4 flex items-center justify-between border border-[#d13212] bg-[#fff4f2] px-4 py-3 text-sm text-[#d13212]">
               <span>{error}</span>
@@ -325,7 +446,7 @@ export default function HostedZonesPage() {
                 onClick={() =>
                   loadZones()
                 }
-                className="font-semibold underline"
+                className="font-semibold underline transition-opacity hover:opacity-70"
               >
                 Try again
               </button>
@@ -399,7 +520,7 @@ export default function HostedZonesPage() {
                               true
                             )
                           }
-                          className="mt-4 text-sm font-semibold text-[#0073bb] hover:underline"
+                          className="mt-4 text-sm font-semibold text-[#0073bb] transition-colors hover:text-[#005a8c] hover:underline"
                         >
                           Create hosted zone
                         </button>
@@ -412,15 +533,17 @@ export default function HostedZonesPage() {
                       key={zone.id}
                       className="border-t border-[#eaeded] hover:bg-[#f7f8f8]"
                     >
+                      {/* Name */}
                       <td className="px-5 py-4">
                         <Link
                           href={`/hosted-zones/${zone.id}`}
-                          className="font-semibold text-[#0073bb] hover:underline"
+                          className="font-semibold text-[#0073bb] transition-colors hover:text-[#005a8c] hover:underline"
                         >
                           {zone.name}
                         </Link>
                       </td>
 
+                      {/* Type */}
                       <td className="px-5 py-4">
                         <span className="inline-flex items-center gap-2">
                           <span className="h-2 w-2 rounded-full bg-[#1d8102]" />
@@ -432,10 +555,12 @@ export default function HostedZonesPage() {
                         </span>
                       </td>
 
+                      {/* Record count */}
                       <td className="px-5 py-4">
                         {zone.record_count}
                       </td>
 
+                      {/* Description */}
                       <td className="max-w-xs px-5 py-4 text-[#5f6b75]">
                         <span className="line-clamp-2">
                           {zone.description ||
@@ -443,44 +568,31 @@ export default function HostedZonesPage() {
                         </span>
                       </td>
 
+                      {/* Actions */}
                       <td className="px-3 py-4">
-                        <div className="group relative">
-                          <button
-                            className="rounded-sm p-1.5 hover:bg-[#eaeded]"
-                            aria-label={`Actions for ${zone.name}`}
-                          >
-                            <MoreVertical
-                              size={17}
-                            />
-                          </button>
-
-                          <div className="absolute right-0 top-full z-10 hidden w-40 border border-[#d5dbdb] bg-white py-1 shadow-lg group-hover:block">
-                            <button
-                              onClick={() =>
-                                openEdit(
-                                  zone
-                                )
-                              }
-                              className="w-full px-4 py-2 text-left text-sm hover:bg-[#f2f3f3]"
-                            >
-                              Edit
-                            </button>
-
-                            <button
-                              onClick={() =>
-                                setDeletingZone(
-                                  zone
-                                )
-                              }
-                              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#d13212] hover:bg-[#fff4f2]"
-                            >
-                              <Trash2
-                                size={14}
-                              />
-                              Delete
-                            </button>
-                          </div>
-                        </div>
+                        <button
+                          onClick={(event) =>
+                            toggleActionMenu(
+                              event,
+                              zone.id
+                            )
+                          }
+                          className={`rounded-sm p-1.5 transition-colors hover:bg-[#eaeded] ${
+                            openMenuId ===
+                            zone.id
+                              ? "bg-[#eaeded]"
+                              : ""
+                          }`}
+                          aria-label={`Actions for ${zone.name}`}
+                          aria-expanded={
+                            openMenuId ===
+                            zone.id
+                          }
+                        >
+                          <MoreVertical
+                            size={17}
+                          />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -515,7 +627,7 @@ export default function HostedZonesPage() {
                           value - 1
                       )
                     }
-                    className="border border-[#879596] px-3 py-1.5 text-sm hover:bg-[#f2f3f3] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="border border-[#879596] px-3 py-1.5 text-sm transition-colors hover:bg-[#f2f3f3] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Previous
                   </button>
@@ -534,7 +646,7 @@ export default function HostedZonesPage() {
                           value + 1
                       )
                     }
-                    className="border border-[#879596] px-3 py-1.5 text-sm hover:bg-[#f2f3f3] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="border border-[#879596] px-3 py-1.5 text-sm transition-colors hover:bg-[#f2f3f3] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Next
                   </button>
@@ -543,6 +655,35 @@ export default function HostedZonesPage() {
             )}
         </div>
       </div>
+
+      {/* Fixed hosted zone action menu */}
+      {openMenuId !== null &&
+        menuPosition !== null && (
+          <div
+            ref={menuRef}
+            className="fixed z-[100] w-40 border border-[#d5dbdb] bg-white py-1 shadow-lg"
+            style={{
+                top: menuPosition.top,
+                left: menuPosition.left,
+            }}
+            >
+            <button
+              onClick={handleEditFromMenu}
+              className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[#f2f3f3]"
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={handleDeleteFromMenu}
+              className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[#d13212] transition-colors hover:bg-[#fff4f2]"
+            >
+              <Trash2 size={14} />
+
+              Delete
+            </button>
+          </div>
+        )}
 
       {/* Create modal */}
       <Modal
@@ -612,7 +753,7 @@ export default function HostedZonesPage() {
                 setDeletingZone(null)
               }
               disabled={actionLoading}
-              className="border border-[#879596] px-4 py-2 text-sm font-semibold hover:bg-[#f2f3f3]"
+              className="border border-[#879596] px-4 py-2 text-sm font-semibold transition-colors hover:bg-[#f2f3f3]"
             >
               Cancel
             </button>
@@ -620,7 +761,7 @@ export default function HostedZonesPage() {
             <button
               onClick={handleDelete}
               disabled={actionLoading}
-              className="bg-[#d13212] px-4 py-2 text-sm font-semibold text-white hover:bg-[#ba2a0b] disabled:opacity-50"
+              className="bg-[#d13212] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#ba2a0b] disabled:opacity-50"
             >
               {actionLoading
                 ? "Deleting..."
@@ -630,6 +771,7 @@ export default function HostedZonesPage() {
         </div>
       </Modal>
 
+      {/* Toast */}
       {toast && (
         <Toast
           message={toast}
