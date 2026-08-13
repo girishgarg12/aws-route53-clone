@@ -9,7 +9,8 @@ from app.services.auth import (
     delete_session,
     get_user_from_session,
 )
-
+from app.dependencies import get_current_user
+from app.models.user import User
 
 router = APIRouter(
     prefix="/api/auth",
@@ -76,29 +77,7 @@ def logout(
 
 
 @router.get("/me", response_model=UserResponse)
-def get_current_user(
-    request: Request,
-    db: Session = Depends(get_db),
+def get_current_user_info(
+    current_user: User = Depends(get_current_user),
 ):
-    session_id = request.cookies.get(
-        SESSION_COOKIE_NAME
-    )
-
-    if not session_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Not authenticated",
-        )
-
-    user = get_user_from_session(
-        db,
-        session_id,
-    )
-
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Session expired or invalid",
-        )
-
-    return user
+    return current_user
