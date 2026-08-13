@@ -15,12 +15,15 @@ export async function login(
 ) {
   return api<User>("/api/auth/login", {
     method: "POST",
+    credentials: "include",
     body: data,
   });
 }
 
 export async function getCurrentUser() {
-  return api<User>("/api/auth/me");
+  return api<User>("/api/auth/me", {
+    credentials: "include",
+  });
 }
 
 export async function logout() {
@@ -28,6 +31,7 @@ export async function logout() {
     "/api/auth/logout",
     {
       method: "POST",
+      credentials: "include",
     }
   );
 }
