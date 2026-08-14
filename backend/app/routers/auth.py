@@ -12,6 +12,8 @@ from app.services.auth import (
 from app.dependencies import get_current_user
 from app.models.user import User
 
+import os
+
 router = APIRouter(
     prefix="/api/auth",
     tags=["Authentication"],
@@ -44,12 +46,14 @@ def login(
         user.id,
     )
 
+    is_production = os.getenv("ENVIRONMENT") == "production"
+
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=session.id,
         httponly=True,
-        samesite="lax",
-        secure=False,
+        samesite="none" if is_production else "lax",
+        secure=is_production,
         max_age=60 * 60 * 24,
     )
 
