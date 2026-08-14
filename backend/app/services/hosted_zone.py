@@ -24,6 +24,40 @@ def create_hosted_zone(
     )
 
     db.add(zone)
+    db.flush()
+
+    # Default NS record
+    ns_record = DNSRecord(
+        hosted_zone_id=zone.id,
+        name=zone.name,
+        type="NS",
+        ttl=172800,
+        value=(
+            "ns-1.route53clone.net\n"
+            "ns-2.route53clone.net\n"
+            "ns-3.route53clone.net\n"
+            "ns-4.route53clone.net"
+        ),
+    )
+
+    # Default SOA record
+    soa_record = DNSRecord(
+        hosted_zone_id=zone.id,
+        name=zone.name,
+        type="SOA",
+        ttl=900,
+        value=(
+            "ns-1.route53clone.net "
+            "hostmaster.route53clone.net "
+            "1 7200 900 1209600 86400"
+        ),
+    )
+
+    db.add_all([
+        ns_record,
+        soa_record,
+    ])
+
     db.commit()
     db.refresh(zone)
 
